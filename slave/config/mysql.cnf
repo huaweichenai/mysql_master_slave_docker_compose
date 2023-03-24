@@ -1,0 +1,41 @@
+[mysqld]
+max_allowed_packet = 512M
+sql_mode = STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
+character-set-server = utf8mb4
+collation-server = utf8mb4_unicode_ci
+
+# 配置 Master(从)
+# 同一局域网内注意要唯一(可使用ip+端口形式)
+server-id = 33062
+# 开启二进制日志功能，以备Slave作为其它Slave的Master时使用
+log-bin = mysql-slave-bin
+# 从库从主库复制数据时可以写入到binlog日志
+log_slave_updates = 1
+
+# 从库普通账户只读
+read_only = 1
+# 从机超管账户禁止写
+# super_read_only = 1
+
+# 要同步的库
+# replicate_do_db = 数据库名称
+
+# 不需要同步的库(多个写多行)
+replicate-ignore-db = mysql
+replicate-ignore-db = information_schema
+replicate-ignore-db = performance_schema
+replicate-ignore-db = sys
+
+# relay_log配置中继日志
+relay_log = mysql-relay
+# I/O thread crash safe(默认关闭)
+relay_log_recovery = 1
+# SQL thread crash safe(默认是file)
+relay_log_info_repository = TABLE
+# 高可用切换时，主可能变成从，所以上面两个参数主也要配上
+master_info_repository = TABLE
+
+# mysqld实例启动时，不跟着启动slave线程
+# skip-slave-start = 1
+# 跳过错误 (all 忽略所有错误)
+# slave_skip_errors == 1062,1053

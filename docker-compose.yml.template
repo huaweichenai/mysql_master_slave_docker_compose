@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+    master:
+        build: ./master
+        volumes:
+            - ./opt/data/master:/var/lib/mysql:delegated
+        ports:
+            - "33061:3306"
+        networks:
+            default:
+                aliases:
+                    - mysql_master
+        environment:
+            MYSQL_ROOT_PASSWORD: [访问密码]
+            MYSQL_SLAVE_USER: "slave"
+            MYSQL_SLAVE_PASSWORD: [Slave访问密码]
+        restart: always
+
+    slave:
+        build: ./slave
+        volumes:
+            - ./opt/data/slave:/var/lib/mysql:delegated
+        ports:
+            - "33062:3306"
+        networks:
+            default:
+                aliases:
+                    - mysql_slave
+        environment:
+            MYSQL_ROOT_PASSWORD: [访问密码]
+        depends_on:
+            - master
+        restart: always
+
+networks:
+    default:
+        external: false
